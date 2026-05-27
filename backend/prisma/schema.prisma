@@ -1,0 +1,79 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  name      String
+  role      String   @default("RECEPTIONIST")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Patient {
+  id             String         @id @default(uuid())
+  name           String
+  email          String?
+  phoneNumber    String
+  age            Int
+  gender         String
+  medicalHistory Json?
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  appointments   Appointment[]
+  queueTokens    QueueToken[]
+}
+
+model Doctor {
+  id              String         @id @default(uuid())
+  name            String
+  specialization  String
+  department      String?
+  experience      Int?
+  consultationFee Float?
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  appointments    Appointment[]
+  queueTokens     QueueToken[]
+}
+
+model Appointment {
+  id              String       @id @default(uuid())
+  patientId       String
+  doctorId        String
+  appointmentDate DateTime
+  reason          String
+  status          String       @default("PENDING")
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+  patient         Patient      @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  doctor          Doctor       @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+
+  // DATABASE SCHEMA OPTIMIZATION:
+  // D1: Prevent double booking at the database level.
+  @@unique([doctorId, appointmentDate])
+
+  // D2: Add missing indices to speed up common queries.
+  @@index([patientId])
+  @@index([doctorId, status])
+}
+
+model QueueToken {
+  id            String       @id @default(uuid())
+  tokenNumber   Int
+  patientId     String
+  doctorId      String
+  appointmentId String?
+  status        String       @default("WAITING")
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+  patient       Patient      @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  doctor        Doctor       @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+}

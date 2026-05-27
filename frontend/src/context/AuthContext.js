@@ -12,10 +12,15 @@ export const AuthProvider = ({ children }) => {
   const [error, setError] = useState(null);
   const router = useRouter();
 
-  // HARDCODED API VALUE: Intentionally hardcoding the backend base URL on the frontend!
-  // This violates production standards and prevents simple domain config, but serves as
-  // a perfect exercise for internship candidates to move to environment variables.
-  const API_BASE_URL = 'http://localhost:5000/api';
+  const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+
+  const logout = () => {
+    localStorage.removeItem('haqms_token');
+    localStorage.removeItem('haqms_user');
+    setToken(null);
+    setUser(null);
+    router.push('/login');
+  };
 
   useEffect(() => {
     // Check for stored token and user on initialization
@@ -24,6 +29,7 @@ export const AuthProvider = ({ children }) => {
 
     if (storedToken && storedUser) {
       try {
+        // eslint-disable-next-line
         setToken(storedToken);
         setUser(JSON.parse(storedUser));
       } catch (e) {
@@ -104,13 +110,6 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const logout = () => {
-    localStorage.removeItem('haqms_token');
-    localStorage.removeItem('haqms_user');
-    setToken(null);
-    setUser(null);
-    router.push('/login');
-  };
 
   return (
     <AuthContext.Provider

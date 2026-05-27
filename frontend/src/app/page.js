@@ -1,82 +1,114 @@
 'use client';
 
 import Link from 'next/link';
-import { Activity, ShieldAlert, MonitorPlay, Users, CalendarDays, ArrowRight } from 'lucide-react';
+import { Activity, ShieldAlert, MonitorPlay, Users, ArrowRight } from 'lucide-react';
+import { motion } from 'framer-motion';
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1,
+    },
+  },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 15, filter: 'blur(4px)' },
+  show: { opacity: 1, y: 0, filter: 'blur(0px)', transition: { duration: 0.5, ease: 'easeOut' } },
+};
 
 export default function Home() {
   return (
-    <div className="flex flex-col min-h-screen justify-between py-12 px-6 lg:px-8">
-      <div className="max-w-4xl mx-auto w-full text-center mt-12 sm:mt-20">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-500/10 text-teal-600 dark:text-teal-400 text-sm font-medium mb-6 animate-pulse">
-          <Activity className="h-4 w-4" />
-          Live Queue Tracking Enabled
-        </div>
+    <div className="relative flex flex-col min-h-screen justify-between py-12 px-6 lg:px-8 bg-[var(--background)] overflow-hidden selection:bg-indigo-500/30 selection:text-white">
+      {/* Cliniva theme abstract background elements */}
+      <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-indigo-500/5 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/3 pointer-events-none -z-10"></div>
+      <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-emerald-500/5 rounded-full blur-[100px] translate-y-1/3 -translate-x-1/4 pointer-events-none -z-10"></div>
+
+      <motion.div 
+        variants={containerVariants}
+        initial="hidden"
+        animate="show"
+        className="max-w-4xl mx-auto w-full text-center mt-20 sm:mt-32 z-10"
+      >
+        <motion.div variants={itemVariants} className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-indigo-500/10 text-indigo-400 text-xs font-bold tracking-widest uppercase mb-8 border border-indigo-500/20 shadow-[0_0_15px_rgba(99,102,241,0.2)]">
+          <Activity className="h-4 w-4 animate-pulse" />
+          <span>Live Queue Tracking Enabled</span>
+        </motion.div>
         
-        <h1 className="text-4xl sm:text-6xl font-extrabold tracking-tight bg-gradient-to-r from-teal-600 to-emerald-500 bg-clip-text text-transparent">
+        <motion.h1 variants={itemVariants} className="text-5xl sm:text-7xl font-semibold tracking-tighter text-white">
           HAQMS
-        </h1>
-        <p className="text-xl sm:text-2xl font-bold mt-2 text-slate-700 dark:text-slate-200">
-          Hospital Appointment & Queue Management System
-        </p>
+        </motion.h1>
         
-        <p className="mt-6 text-lg text-slate-500 dark:text-slate-400 max-w-xl mx-auto">
-          Welcome to the HAQMS testing environment. This portal serves as a deliberately flawed, 
-          fully functional reference application designed to evaluate software engineering candidates.
-        </p>
+        <motion.p variants={itemVariants} className="text-xl sm:text-2xl font-medium mt-4 text-zinc-400 tracking-tight">
+          Hospital Appointment & Queue Management
+        </motion.p>
+        
+        <motion.p variants={itemVariants} className="mt-6 text-base text-zinc-500 max-w-lg mx-auto">
+          A deliberately flawed reference application designed to evaluate engineering candidates. High-performance, scalable, and secure.
+        </motion.p>
 
         {/* Action Cards */}
-        <div className="mt-12 grid gap-8 sm:grid-cols-2 max-w-2xl mx-auto">
+        <motion.div variants={containerVariants} className="mt-16 grid gap-6 sm:grid-cols-2 max-w-2xl mx-auto">
           {/* Card 1: Staff Portal */}
-          <Link href="/login" className="group">
-            <div className="glass p-8 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-800 text-left hover:border-teal-500/50 hover:shadow-teal-500/10 transition-all duration-300 transform hover:-translate-y-1">
-              <div className="p-3 bg-teal-500/10 text-teal-600 dark:text-teal-400 rounded-xl w-fit group-hover:bg-teal-500 group-hover:text-white transition-colors duration-300">
-                <Users className="h-6 w-6" />
+          <Link href="/login" className="group block">
+            <motion.div variants={itemVariants} className="cliniva-card p-6 text-left h-full group-hover:-translate-y-1 transition-transform">
+              <div className="flex justify-between items-start mb-4">
+                <div className="p-2 bg-white/5 rounded-md border border-white/10 text-white">
+                  <Users className="h-5 w-5" />
+                </div>
+                <ArrowRight className="h-4 w-4 text-zinc-500 group-hover:text-white transition-colors" />
               </div>
-              <h2 className="mt-6 text-xl font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2">
+              <h2 className="text-lg font-semibold text-white mb-2 tracking-tight">
                 Staff Portal
-                <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
               </h2>
-              <p className="mt-2 text-slate-500 dark:text-slate-400 text-sm">
-                Access your specialized dashboard. Supports role-based workflows for Administrators, Doctors, and Receptionists.
+              <p className="text-zinc-500 text-sm leading-relaxed">
+                Access the specialized dashboard. Supports role-based workflows for Administrators, Doctors, and Receptionists.
               </p>
-            </div>
+            </motion.div>
           </Link>
 
           {/* Card 2: Public Queue Monitor */}
-          <Link href="/queue" className="group">
-            <div className="glass p-8 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-800 text-left hover:border-teal-500/50 hover:shadow-teal-500/10 transition-all duration-300 transform hover:-translate-y-1">
-              <div className="p-3 bg-teal-500/10 text-teal-600 dark:text-teal-400 rounded-xl w-fit group-hover:bg-teal-500 group-hover:text-white transition-colors duration-300">
-                <MonitorPlay className="h-6 w-6" />
+          <Link href="/queue" className="group block">
+            <motion.div variants={itemVariants} className="cliniva-card p-6 text-left h-full group-hover:-translate-y-1 transition-transform">
+              <div className="flex justify-between items-start mb-4">
+                <div className="p-2 bg-white/5 rounded-md border border-white/10 text-white">
+                  <MonitorPlay className="h-5 w-5" />
+                </div>
+                <ArrowRight className="h-4 w-4 text-zinc-500 group-hover:text-white transition-colors" />
               </div>
-              <h2 className="mt-6 text-xl font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2">
+              <h2 className="text-lg font-semibold text-white mb-2 tracking-tight">
                 Live Public Monitor
-                <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
               </h2>
-              <p className="mt-2 text-slate-500 dark:text-slate-400 text-sm">
-                Real-time active queue board tracking patient check-ins and calling tokens by physician. Built with live refresh.
+              <p className="text-zinc-500 text-sm leading-relaxed">
+                Real-time active queue board tracking patient check-ins and calling tokens by physician.
               </p>
-            </div>
+            </motion.div>
           </Link>
-        </div>
+        </motion.div>
 
         {/* Assessment Notice Box */}
-        <div className="mt-16 glass max-w-xl mx-auto p-6 rounded-2xl border border-rose-500/20 shadow-md flex gap-4 text-left">
-          <div className="p-2 bg-rose-500/10 text-rose-500 rounded-lg h-fit">
-            <ShieldAlert className="h-6 w-6" />
-          </div>
+        <motion.div variants={itemVariants} className="mt-24 border-t border-white/10 pt-8 max-w-xl mx-auto flex gap-4 text-left">
+          <ShieldAlert className="h-5 w-5 text-zinc-500 shrink-0 mt-0.5" />
           <div>
-            <h3 className="font-bold text-slate-800 dark:text-slate-100">Assessment Environment Notice</h3>
-            <p className="mt-1 text-slate-500 dark:text-slate-400 text-sm">
+            <h3 className="font-semibold text-zinc-300 text-sm">Assessment Environment Notice</h3>
+            <p className="mt-1 text-zinc-500 text-xs leading-relaxed">
               This repository contains critical architectural, database performance, frontend memory, and security bugs. 
               Your evaluation criteria will measure your ability to identify, trace, profile, and fix these issues systematically.
             </p>
           </div>
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
 
-      <footer className="text-center text-slate-400 dark:text-slate-500 text-xs mt-12">
-        HAQMS v1.0.0-deliberate-bugs &copy; {new Date().getFullYear()} Candidate Evaluation Framework.
-      </footer>
+      <motion.footer 
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 1, duration: 1 }}
+        className="text-center text-zinc-600 text-xs mt-12 z-10"
+      >
+        HAQMS &copy; {new Date().getFullYear()} Candidate Evaluation Framework.
+      </motion.footer>
     </div>
   );
 }

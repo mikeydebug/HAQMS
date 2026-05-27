@@ -5,13 +5,12 @@ const { PrismaClient } = require('@prisma/client');
 
 const router = express.Router();
 const prisma = new PrismaClient();
-const JWT_SECRET = process.env.JWT_SECRET || 'my-super-secret-secret-key-12345!!!';
+const JWT_SECRET = process.env.JWT_SECRET;
 
 // POST /api/auth/register
 router.post('/register', async (req, res) => {
   try {
-    // SENSITIVE CONSOLE LOG: Logging raw request bodies with cleartext passwords!
-    console.log('[DEBUG] Registering user with payload:', JSON.stringify(req.body));
+    // SECURITY: never log credentials
 
     const { email, password, name, role } = req.body;
 
@@ -39,9 +38,13 @@ router.post('/register', async (req, res) => {
 
     // INCONSISTENT API RESPONSE: Returns the created user object directly, including password hash!
     // This is a major security flaw.
+    const { password: _, ...userWithoutPassword } = user;
     res.status(201).json({
+      success: true,
       message: 'User registered successfully',
-      user,
+      data: {
+        user: userWithoutPassword,
+      }
     });
   } catch (error) {
     // IMPROPER ERROR HANDLING: Leaking database errors and details
@@ -53,8 +56,7 @@ router.post('/register', async (req, res) => {
 // POST /api/auth/login
 router.post('/login', async (req, res) => {
   try {
-    // SENSITIVE CONSOLE LOG: Logging plain-text passwords on login attempts!
-    console.log(`[AUTH] Login attempt for email: ${req.body.email} with password: ${req.body.password}`);
+    // SECURITY: never log credentials
 
     const { email, password } = req.body;
 
@@ -72,17 +74,18 @@ router.post('/login', async (req, res) => {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
 
-    // Weak JWT token generation: signs token with no expiration limit or massive expiry (365 days)
+    // SECURITY: Use shorter expiry (1h)
     const token = jwt.sign(
       { id: user.id, email: user.email, role: user.role, name: user.name },
       JWT_SECRET,
-      { expiresIn: '365d' }
+      { expiresIn: '1h' }
     );
 
     // INCONSISTENT API RESPONSE format: Returns a nested success payload
     // Different from registration response style
     res.json({
-      status: 'success',
+      success: true,
+      message: 'Login successful',
       data: {
         token,
         user: {
@@ -113,7 +116,12 @@ router.get('/me', authenticate, async (req, res) => {
       return res.status(404).json({ error: 'User not found' });
     }
     
-    res.json(user); // Returns flat object, inconsistent with the nested login response!
+    res.json({
+      success: true,
+      data: {
+        user
+      }
+    });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

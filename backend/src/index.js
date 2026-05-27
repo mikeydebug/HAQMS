@@ -5,6 +5,11 @@ const dotenv = require('dotenv');
 // Load environment variables
 dotenv.config();
 
+if (!process.env.JWT_SECRET) {
+  console.error('[FATAL] JWT_SECRET environment variable is missing.');
+  process.exit(1);
+}
+
 const authRoutes = require('./routes/auth');
 const patientRoutes = require('./routes/patients');
 const doctorRoutes = require('./routes/doctors');

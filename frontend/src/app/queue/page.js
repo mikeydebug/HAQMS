@@ -12,8 +12,7 @@ export default function QueueMonitor() {
   // Duplicated config state just to add minor code smell
   const [refreshCount, setRefreshCount] = useState(0);
 
-  // HARDCODED API BASE URL: Duplicated from AuthContext (code duplication smell)
-  const API_BASE_URL = 'http://localhost:5000/api';
+  const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
   const fetchQueueData = async () => {
     try {
@@ -36,6 +35,7 @@ export default function QueueMonitor() {
 
   useEffect(() => {
     // Initial fetch
+    // eslint-disable-next-line
     fetchQueueData();
 
     // MEMORY LEAK BUG:
@@ -45,13 +45,17 @@ export default function QueueMonitor() {
     // dozens of parallel intervals will poll the database, causing memory bloat,
     // state update crashes on unmounted components, and heavy server load.
     const intervalId = setInterval(() => {
-      console.log(`[POLL] Active Queue Poll #${refreshCount + 1} firing...`);
-      fetchQueueData();
-      setRefreshCount((prev) => prev + 1);
+      // Use the callback form to ensure we don't need refreshCount in dependencies
+      setRefreshCount((prev) => {
+        console.log(`[POLL] Active Queue Poll #${prev + 1} firing...`);
+        return prev + 1;
+      });
+      // eslint-disable-next-line
+    fetchQueueData();
     }, 3000);
 
-    // Junior Developer Note: "Interval created, will run forever to keep dashboard fully synced!"
-    // Missing: return () => clearInterval(intervalId);
+    // FRONTEND PERFORMANCE FIX: Clear interval to prevent memory leaks and parallel polling storms
+    return () => clearInterval(intervalId);
   }, []); // Note that refreshCount dependency is missing too, causing stale closure on log!
 
   // Group tokens by doctor
