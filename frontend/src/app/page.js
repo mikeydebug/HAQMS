@@ -88,17 +88,6 @@ export default function Home() {
           </Link>
         </motion.div>
 
-        {/* Assessment Notice Box */}
-        <motion.div variants={itemVariants} className="mt-24 border-t border-white/10 pt-8 max-w-xl mx-auto flex gap-4 text-left">
-          <ShieldAlert className="h-5 w-5 text-zinc-500 shrink-0 mt-0.5" />
-          <div>
-            <h3 className="font-semibold text-zinc-300 text-sm">Assessment Environment Notice</h3>
-            <p className="mt-1 text-zinc-500 text-xs leading-relaxed">
-              This repository contains critical architectural, database performance, frontend memory, and security bugs. 
-              Your evaluation criteria will measure your ability to identify, trace, profile, and fix these issues systematically.
-            </p>
-          </div>
-        </motion.div>
       </motion.div>
 
       <motion.footer 
