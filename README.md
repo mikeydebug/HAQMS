@@ -9,6 +9,10 @@
 
   <h1 align="center">🏥 HAQMS: Hospital Appointment & Queue Management System</h1>
   <p align="center"><strong>An enterprise-grade, high-throughput clinical dashboard demonstrating elite full-stack engineering, zero-day security patching, database concurrency locks, and a premium UX.</strong></p>
+  
+  <h3 align="center">
+    🔴 <a href="https://haqms-swart.vercel.app" target="_blank">View Live Deployed Application</a>
+  </h3>
 </div>
 
 <hr />
